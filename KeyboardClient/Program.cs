@@ -16,8 +16,7 @@ namespace KeyboardClient
 
         static void sendKey(byte bvk,short keyFlag)
         {
-         
-            if(keyFlag == 0x0100)
+            if(keyFlag == 0x0100 || keyFlag == 0x0104)
             {
                 //Key Press
                 keybd_event(bvk, 0, 0x0001|0x0000, 0);

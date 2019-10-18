@@ -39,56 +39,56 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_973B4D283CC34A8ACB146D4C3931F698"
-        "OwnerKey" = "8:_23D4E7F41B8042E4A32CB3072B138B77"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_973B4D283CC34A8ACB146D4C3931F698"
-        "OwnerKey" = "8:_6BE2A9D730DB49ED8A6C565F77E8312F"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_973B4D283CC34A8ACB146D4C3931F698"
-        "OwnerKey" = "8:_5488C44E1CEB494DBF0DAE1BC5C2D799"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_973B4D283CC34A8ACB146D4C3931F698"
+        "MsmKey" = "8:_B2C590E1EF3DE30253907922166AA266"
         "OwnerKey" = "8:_297859387ABF42F6B11C73079FF52BF6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_B2C590E1EF3DE30253907922166AA266"
         "OwnerKey" = "8:_23D4E7F41B8042E4A32CB3072B138B77"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_B2C590E1EF3DE30253907922166AA266"
         "OwnerKey" = "8:_6BE2A9D730DB49ED8A6C565F77E8312F"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_B2C590E1EF3DE30253907922166AA266"
         "OwnerKey" = "8:_5488C44E1CEB494DBF0DAE1BC5C2D799"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_23D4E7F41B8042E4A32CB3072B138B77"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_6BE2A9D730DB49ED8A6C565F77E8312F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_5488C44E1CEB494DBF0DAE1BC5C2D799"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_297859387ABF42F6B11C73079FF52BF6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_973B4D283CC34A8ACB146D4C3931F698"
+        "OwnerKey" = "8:_B2C590E1EF3DE30253907922166AA266"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -186,14 +186,14 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_973B4D283CC34A8ACB146D4C3931F698"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B2C590E1EF3DE30253907922166AA266"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_973B4D283CC34A8ACB146D4C3931F698"
+                    "_B2C590E1EF3DE30253907922166AA266"
                     {
                     "Name" = "8:System.Net.Http.dll"
                     "Attributes" = "3:512"
@@ -262,15 +262,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Keyboard emulation tools"
-        "ProductCode" = "8:{A3C4F7D1-A399-4F2C-BFCF-75BCD8A39382}"
-        "PackageCode" = "8:{991AA786-ECF2-4E3B-8E34-FADF660317C4}"
+        "ProductCode" = "8:{05BEE095-4E0A-49E0-A581-1B4D7B20A24C}"
+        "PackageCode" = "8:{07A6E703-AF9D-494E-BB83-A8E2F857B70F}"
         "UpgradeCode" = "8:{FAD50A31-7F56-4FD1-B9E5-02388D958C0B}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.2.0"
+        "ProductVersion" = "8:1.2.1"
         "Manufacturer" = "8:Prashant Elango"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:https://twitter.com/Prashant_Elango"
