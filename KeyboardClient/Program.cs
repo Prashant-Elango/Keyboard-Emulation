@@ -8,9 +8,9 @@ namespace KeyboardClient
 {
     class Program
     {
-        static Dictionary<byte, byte> keyboardScanCode = new Dictionary<byte, byte>() { 
-            (0x)
-        };
+        //static Dictionary<byte, byte> keyboardScanCode = new Dictionary<byte, byte>() { 
+        //    (0x)
+        //};
         [DllImport("user32.dll")]
         static extern void keybd_event(byte bVk,byte bScan,uint dwFlags,int dwExtraInfo);
 
