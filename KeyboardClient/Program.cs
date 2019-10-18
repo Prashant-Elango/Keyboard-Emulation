@@ -8,6 +8,9 @@ namespace KeyboardClient
 {
     class Program
     {
+        static Dictionary<byte, byte> keyboardScanCode = new Dictionary<byte, byte>() { 
+            (0x)
+        };
         [DllImport("user32.dll")]
         static extern void keybd_event(byte bVk,byte bScan,uint dwFlags,int dwExtraInfo);
 
@@ -17,12 +20,12 @@ namespace KeyboardClient
             if(keyFlag == 0x0100)
             {
                 //Key Press
-                keybd_event(bvk, 0, 0x0001, 0);
+                keybd_event(bvk, 0, 0x0001|0x0000, 0);
             }
             else
             {
                 //Key Release
-                keybd_event(bvk, 0, 0x0002, 0);
+                keybd_event(bvk, 0, 0x0001|0x0002, 0);
 
             }
 

@@ -19,8 +19,10 @@ namespace KeyboardServer
 
         static Socket sSock;
         static Socket clientSock;
+        static Dictionary<int, short> activeKeys;
         static void Main(string[] args)
         {
+            activeKeys = new Dictionary<int, short>();
             sSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var internalIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(t => t.AddressFamily == AddressFamily.InterNetwork).ToList()[0];
             int port = 9022;
@@ -151,7 +153,27 @@ namespace KeyboardServer
                         {
                             var keyFlag = BitConverter.GetBytes((short)wParams);
                             var buffer = new byte[] { 0, 0, 0, (byte)vkCode, 0, keyFlag[0], keyFlag[1] };
-                            clientSock.Send(buffer);
+                            if (activeKeys.ContainsKey(vkCode))
+                            {
+                                if(activeKeys[vkCode] != (short)wParams)
+                                {
+                                    clientSock.Send(buffer);
+                                    activeKeys.Remove(vkCode);
+                                }
+
+                            }
+                            else
+                            {
+                                activeKeys.Add(vkCode, (short)wParams);
+                                clientSock.Send(buffer);
+                            }
+                            Console.WriteLine("------------");
+                            for (int i = 0; i < activeKeys.Count; i++)
+                            {
+                                var d = activeKeys.ElementAt(0);
+                                Console.WriteLine($"key --> {d.Key} --> {d.Value}");
+                            }
+                            Console.WriteLine("end");
                         }
                         catch (Exception)
                         {
