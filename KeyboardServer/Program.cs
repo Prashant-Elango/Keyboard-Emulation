@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -20,70 +21,84 @@ namespace KeyboardServer
         static Socket clientSock;
         static void Main(string[] args)
         {
-            if (args.Length == 1)
+            sSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            var internalIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(t => t.AddressFamily == AddressFamily.InterNetwork).ToList()[0];
+            int port = 9022;
+            bool mirror = false;
+            int maxConnection = 1;
+            if (args.Length > 0)
             {
                 if (args[0] == "\\h" || args[0] == "-h" || args[0] == "--h" || args[0] == "help")
                 {
                     Console.WriteLine("Keyboard Server");
-                    Console.WriteLine("      -c           sets ipaddress to listen on");
-                    Console.WriteLine("      -p           sets port");
-                    Console.WriteLine("      -m           Mirror Mode, Were keyboard inputs are mirrored on both local and remote machine");
+                    Console.WriteLine("      -c x.x.x.x          sets ipaddress to listen on");
+                    Console.WriteLine("      -p x                sets port");
                     Console.WriteLine("     Default port is 9022");
+                    Console.WriteLine("      -m {true or false}          Mirror Mode, Were keyboard inputs are mirrored on both local and remote machine");
+                    Console.WriteLine("     Default -m false");
+                    //Console.WriteLine("      -maxConnection x            Maximum number of connection"); //Reserverd for future implementation
+                    //Console.WriteLine("     Default -maxConnection 1");
                     Console.WriteLine("usage:");
                     Console.WriteLine("         keyboardServer.exe -c 192.168.1.10");
                     Console.WriteLine("         keyboardServerexe -c 192.168.1.10 -p 9022");
+                    Environment.Exit(0);
                 }
-                Environment.Exit(0);
+                
+                if (args.Length%2==0)
+                {
+                    var dictArgs = new Dictionary<string,string>();
+                    for (int i = 0; i < (args.Length/2); i++)
+                    {
+                        dictArgs.Add(args[i*2],args[(i*2)+1]);
+                    }
+                    dictArgs.AsParallel().ForAll((KeyValuePair<string,string> pair) => {
+                        if(pair.Key == "-c")
+                        {
+                            try
+                            {
+                                internalIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(t => t.AddressFamily == AddressFamily.InterNetwork && t.ToString() == pair.Value).ToList()[0];
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Invalid IpV4 address");
+                                Environment.Exit(0);
+                            }
+                        }
+                        else if(pair.Key == "-p")
+                        {
+                            try
+                            {
+                                port = int.Parse(pair.Value);
+                            }
+                            catch (Exception)
+                            {
+                                Console.WriteLine("Invalid port");
+                                Environment.Exit(0);
+                            }
+                        }
+                        else if(pair.Key == "-m")
+                        {
+                            try
+                            {
+                                mirror = bool.Parse(pair.Value);
+                            }
+                            catch (Exception)
+                            {
+
+                                Console.WriteLine("must be a bool");
+                                Environment.Exit(0);
+
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    Console.WriteLine("Ivalid commandline argument");
+                    Environment.Exit(0);
+                }
             }
 
-            sSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            var internalIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(t=> t.AddressFamily == AddressFamily.InterNetwork).ToList()[0];
-                        int port = 9022;
-            if(args.Length == 4)
-            {
-                if(args[0] == "-c")
-                {
-                    var _ip = args[1];
-                    try
-                    {
-                        internalIp = Dns.GetHostAddresses(Dns.GetHostName()).Where(t => t.AddressFamily == AddressFamily.InterNetwork && t.ToString() == _ip).ToList()[0];
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Invalid Ipv4");
-                        Console.WriteLine(e.Message);
-                    }
-                }
-                if(args[2] == "-p")
-                {
-                    var _port = args[3];
-                    try
-                    {
-                        port = int.Parse(_port);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Invalid port");
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
-            else if(args.Length == 2)
-            {
-                if (args[0] == "-p")
-                {
-                    var _port = args[1];
-                    try
-                    {
-                        port = int.Parse(_port);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Invalid port");
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
             Console.WriteLine($"Listening on {internalIp}:{port}");
             var ipEndPoint = new IPEndPoint(internalIp, port);
             sSock.Bind(ipEndPoint);
@@ -96,18 +111,29 @@ namespace KeyboardServer
                     clientSock = await sSock.AcceptAsync();
                 }
             });
+            SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS | EXECUTION_STATE.ES_SYSTEM_REQUIRED | EXECUTION_STATE.ES_AWAYMODE_REQUIRED);
             serverThread.Start();
-            if (BlockInput(true))
+            if(!mirror)
             {
-                Console.WriteLine("Keyboard input grabbed successfully");
+                if (BlockInput(true))
+                {
+                    Console.WriteLine("Keyboard input grabbed successfully");
+                    Console.WriteLine("/n/nPress Ctrl-Alt-Del to break keyboard grab/n/nPress Ctrl-C to End program");
+                }
+                else
+                {
+                    Console.WriteLine("Keyboard input not grabbed");
+                    Console.WriteLine("Admin access is required to lock keyboard input");
+                }
             }
             else
             {
-                Console.WriteLine("Keyboard input not grabbed");
-                Console.WriteLine("Admin access is required to lock keyboard input");
+                Console.WriteLine("Mirror enabled");
             }
+
             _hookId = SetHook(_proc);
             Application.Run();
+            SetThreadExecutionState(EXECUTION_STATE.ES_CONTINUOUS);
             UnhookWindowsHookEx(_hookId);
         }
 
@@ -117,9 +143,9 @@ namespace KeyboardServer
             if (ncode >= 0)
             {
                 int vkCode = Marshal.ReadInt32(lParam);
-                if(clientSock!=null)
+                if (clientSock != null)
                 {
-                    if(clientSock.Connected)
+                    if (clientSock.Connected)
                     {
                         try
                         {
@@ -131,7 +157,7 @@ namespace KeyboardServer
                         {
                             clientSock = null;
                         }
-                        
+
 
                     }
                 }
@@ -145,7 +171,16 @@ namespace KeyboardServer
             var moduleHandle = GetModuleHandle(mainModule.ModuleName);
             return SetWindowsHookEx(WH_Keyboard_LL, proc, moduleHandle, 0);
         }
-
+        enum EXECUTION_STATE : uint
+        {
+            ES_AWAYMODE_REQUIRED = 0x00000040,
+            ES_CONTINUOUS = 0x80000000,
+            ES_DISPLAY_REQUIRED = 0x00000002,
+            ES_SYSTEM_REQUIRED = 0x00000001,
+            ES_USER_PRESENT = 0x00000004 //Legacy. Don't use this one.
+        }
+        [DllImport("kernel32.dll")]
+        static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
         [DllImport("user32.dll")]
         static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 

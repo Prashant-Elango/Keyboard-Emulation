@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
@@ -27,50 +29,62 @@ namespace KeyboardClient
         }
         static void Main(string[] args)
         {
-            if(args.Length == 1)
+            var sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            var serverIp = "";
+            var serverPort = 9022;
+            if (args.Length > 0)
             {
-                if(args[0] == "\\h" || args[0] == "-h" || args[0] == "--h" || args[0] == "help")
+                if (args[0] == "\\h" || args[0] == "-h" || args[0] == "--h" || args[0] == "help")
                 {
                     Console.WriteLine("Keyboard Client");
                     Console.WriteLine("         -c           sets keyboardServer Ip address");
                     Console.WriteLine("         -p           sets port");
+                    Console.WriteLine("      Default -p 9022");
                     Console.WriteLine("Usages:");
                     Console.WriteLine("     ex: keyboardClient.exe -c 192.168.1.10 -p 5555");
                     Console.WriteLine("     ex: keyboardClient.exe -c 192.168.1.10");
+                    Environment.Exit(0);
                 }
-                Environment.Exit(0);
-            }
-            var sock = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
-            var serverIp = "";
-            var serverPort = 0;
-            if(args.Length == 4)
-            {
-                if(args[0] == "-c")
+
+                if (args.Length % 2 == 0)
                 {
-                    serverIp = args[1];
-                }
-                if(args[2] == "-p")
-                {
-                    try
+                    var dictArgs = new Dictionary<string, string>();
+                    for (int i = 0; i < (args.Length / 2); i++)
                     {
-                        serverPort = int.Parse(args[3]);
+                        dictArgs.Add(args[i * 2], args[(i * 2) + 1]);
                     }
-                    catch (Exception)
-                    {
-                        Console.WriteLine("Invalid port");
-                    }
-                }
-            }
-            else if(args.Length == 2)
-            {
-                if(args[0] == "-c")
-                {
-                    serverIp = args[1];
-                    serverPort = 9022;
+                    dictArgs.AsParallel().ForAll((KeyValuePair<string, string> pair) => {
+                        if (pair.Key == "-c")
+                        {
+                            try
+                            {
+                                serverIp = pair.Value;
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Invalid IpV4 server address");
+                                Environment.Exit(0);
+                            }
+                        }
+                        else if (pair.Key == "-p")
+                        {
+                            try
+                            {
+                                serverPort = int.Parse(pair.Value);
+                            }
+                            catch (Exception)
+                            {
+                                Console.WriteLine("Invalid port");
+                                Environment.Exit(0);
+                            }
+                        }
+                        
+                    });
                 }
                 else
                 {
-                    Console.WriteLine("Use -c to specify Server IP");
+                    Console.WriteLine("Ivalid commandline argument");
+                    Environment.Exit(0);
                 }
             }
             if (serverIp != "" && serverPort != 0)
